@@ -81,24 +81,34 @@ if 'All' not in station_selected:
 
 avg_pollutant = filtered_data.groupby('station')[pollutant].mean()
 
-good_air = avg_pollutant[avg_pollutant < good_threshold].sort_values()
-bad_air = avg_pollutant[avg_pollutant > bad_threshold].sort_values(ascending=False)
+best_station = avg_pollutant.idxmin()
+worst_station = avg_pollutant.idxmax()
+
+best_value = avg_pollutant.min()
+worst_value = avg_pollutant.max()
 
 # Title
 st.title("Air Quality Monitoring Dashboard 🌍")
 
-# Display Metrics for Good Air Quality Stations
-st.subheader(f"🏞️ Good Air Quality Stations ({pollutant} < {good_threshold} µg/m³)")
-for station, value in good_air.items():
-    station_type = station_info[station]['type']
-    st.metric(label=f"{station} ({station_type})", value=f"{value:.2f} µg/m³", delta="Good", delta_color="normal")
+# Display Metrics for Best Air Quality Station
+st.subheader(f"🏞️ Best Air Quality Station ({pollutant})")
+station_type = station_info[best_station]['type']
+st.metric(
+    label=f"{best_station} ({station_type})", 
+    value=f"{best_value:.2f} µg/m³", 
+    delta="Best", 
+    delta_color="normal"
+)
 
-# Display Metrics for Bad Air Quality Stations
-st.subheader(f"🏙️ Bad Air Quality Stations ({pollutant} > {bad_threshold} µg/m³)")
-for station, value in bad_air.items():
-    station_type = station_info[station]['type']
-    st.metric(label=f"{station} ({station_type})", value=f"{value:.2f} µg/m³", delta="Bad", delta_color="inverse")
-
+# Display Metrics for Worst Air Quality Station
+st.subheader(f"🏙️ Worst Air Quality Station ({pollutant})")
+station_type = station_info[worst_station]['type']
+st.metric(
+    label=f"{worst_station} ({station_type})", 
+    value=f"{worst_value:.2f} µg/m³", 
+    delta="Worst", 
+    delta_color="inverse"
+)
 # 1. Business Question 1 - Annual Trend (2013-2017) by Station
 st.subheader(f"1. {pollutant} - Annual Trend (2013-2017) by Station")
 annual_trend = filtered_data.resample('M').mean()
