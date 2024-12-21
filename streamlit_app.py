@@ -88,7 +88,7 @@ best_value = avg_pollutant.min()
 worst_value = avg_pollutant.max()
 
 # Title
-st.title("Air Quality Monitoring Dashboard 🌍")
+st.title("Beijing Air Quality Monitoring Dashboard 🌍")
 
 # Display Metrics for Best Air Quality Station
 st.subheader(f"🏞️ Best Air Quality Station ({pollutant})")
