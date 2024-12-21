@@ -7,7 +7,7 @@ from dataprep.eda import create_report
 from streamlit.components.v1 import html
 
 # Load Data
-@st.cache
+@st.cache_data
 def load_data():
     data = pd.read_csv('main_data.csv')
     data['datetime'] = pd.to_datetime(data['datetime'])
