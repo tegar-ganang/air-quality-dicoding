@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import folium
+import matplotlib
 from streamlit_folium import folium_static
 from dataprep.eda import create_report
 from streamlit.components.v1 import html
@@ -33,7 +34,7 @@ station_locations = {
 
 # Sidebar
 st.sidebar.header("Filter Options")
-pollutant = st.sidebar.selectbox("Select Pollutant", ['PM2.5', 'PM10', 'SO2', 'NO2', 'CO', 'O3'])
+pollutant = st.sidebar.selectbox("Select Pollutant", ['NO2', 'PM10', 'SO2', 'CO', 'O3', 'PM2.5'])
 start_date, end_date = st.sidebar.date_input(
     "Select Date Range", 
     [data.index.min().date(), data.index.max().date()]
@@ -54,14 +55,45 @@ if 'All' not in station_selected:
 # Title
 st.title("Air Quality Monitoring Dashboard 🌍")
 
-# 1. Business Question 1 - Annual Trend (2013-2017)
-st.subheader(f"1. {pollutant} - Trend Analysis (2013-2017) by Station")
-st.line_chart(filtered_data.resample('M').mean()[pollutant])
+# # 1. Business Question 1 - Annual Trend (2013-2017)
+# st.subheader(f"1. {pollutant} - Trend Analysis (2013-2017) by Station")
+# st.line_chart(filtered_data.resample('M').mean()[pollutant])
 
-# 2. Business Question 2 - Seasonal Patterns
-st.subheader(f"2. {pollutant} - Seasonal Patterns (Monthly Averages)")
-seasonal_data = filtered_data.groupby(filtered_data.index.month)[pollutant].mean()
-st.line_chart(seasonal_data)
+# # 2. Business Question 2 - Seasonal Patterns
+# st.subheader(f"2. {pollutant} - Seasonal Patterns (Monthly Averages)")
+# seasonal_data = filtered_data.groupby(filtered_data.index.month)[pollutant].mean()
+# st.line_chart(seasonal_data)
+# 1. Business Question 1 - Annual Trend (2013-2017) by Station
+st.subheader(f"1. {pollutant} - Annual Trend (2013-2017) by Station")
+annual_trend = filtered_data.resample('M').mean()
+annual_trend_by_station = filtered_data.groupby([filtered_data.index.year, 'station'])[pollutant].mean().unstack()
+
+plt.figure(figsize=(14, 7))
+for station in annual_trend_by_station.columns:
+    plt.plot(annual_trend_by_station.index, annual_trend_by_station[station], label=f"{station} ({pollutant})")
+
+plt.title(f'Annual Trend of {pollutant} (2013-2017) by Station')
+plt.xlabel('Year')
+plt.ylabel(f'{pollutant} (µg/m³)')
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.grid(True)
+st.pyplot(plt)
+
+# 2. Business Question 2 - Seasonal Patterns by Station
+st.subheader(f"2. {pollutant} - Seasonal Patterns by Station")
+seasonal_data = filtered_data.groupby([filtered_data.index.month, 'station'])[pollutant].mean().unstack()
+
+plt.figure(figsize=(14, 7))
+for station in seasonal_data.columns:
+    plt.plot(seasonal_data.index, seasonal_data[station], label=f"{station} ({pollutant})")
+
+plt.title(f'Seasonal Variation of {pollutant} by Station')
+plt.xlabel('Month')
+plt.ylabel(f'Average {pollutant} (µg/m³)')
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.grid(True)
+st.pyplot(plt)
+
 
 # 3. Business Question 3 - Urban vs Suburban Comparison
 st.subheader(f"3. {pollutant} - Urban vs Suburban Comparison")
