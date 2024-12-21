@@ -44,5 +44,5 @@ dataprep
 
 ### 4. Run the Streamlit App:
 ```bash
-streamlit run air_quality_dashboard.py
+streamlit run streamlit_app.py
 ```
