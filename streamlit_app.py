@@ -135,9 +135,9 @@ def create_map(data, pollutant):
 
     for _, row in station_avg.iterrows():
         station = row['station']
-        if station in station_locations:
+        if station in station_info:
             folium.CircleMarker(
-                location=station_locations[station],
+                location=station_info[station],
                 radius=10,
                 popup=f"{station} - {pollutant}: {row[pollutant]:.2f} µg/m³",
                 color='crimson' if row[pollutant] > 100 else 'orange' if row[pollutant] > 50 else 'green',
