@@ -31,6 +31,22 @@ station_info = {
     'Wanliu': {'location': [39.967, 116.307], 'type': 'Urban'},
     'Wanshouxigong': {'location': [39.883, 116.358], 'type': 'Urban'}
 }
+
+station_locations = {
+    'Aotizhongxin': [39.982, 116.397],
+    'Changping': [40.220, 116.234],
+    'Dingling': [40.290, 116.220],
+    'Dongsi': [39.929, 116.417],
+    'Guanyuan': [39.929, 116.339],
+    'Gucheng': [39.911, 116.163],
+    'Huairou': [40.374, 116.623],
+    'Nongzhanguan': [39.933, 116.472],
+    'Shunyi': [40.126, 116.655],
+    'Tiantan': [39.886, 116.407],
+    'Wanliu': [39.967, 116.307],
+    'Wanshouxigong': [39.883, 116.358]
+}
+
 # Sidebar
 st.sidebar.header("Filter Options")
 pollutant = st.sidebar.selectbox("Select Pollutant", ['NO2', 'PM10', 'SO2', 'CO', 'O3', 'PM2.5'])
@@ -135,9 +151,9 @@ def create_map(data, pollutant):
 
     for _, row in station_avg.iterrows():
         station = row['station']
-        if station in station_info:
+        if station in station_locations:
             folium.CircleMarker(
-                location=station_info[station],
+                location=station_locations[station],
                 radius=10,
                 popup=f"{station} - {pollutant}: {row[pollutant]:.2f} µg/m³",
                 color='crimson' if row[pollutant] > 100 else 'orange' if row[pollutant] > 50 else 'green',
