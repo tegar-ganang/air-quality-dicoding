@@ -1,5 +1,6 @@
 streamlit
 dataprep
 folium
+streamlit_folium
 pandas
 matplotlib
