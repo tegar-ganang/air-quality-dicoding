@@ -17,21 +17,20 @@ def load_data():
 data = load_data()
 
 # Station locations
-station_locations = {
-    'Aotizhongxin': [39.982, 116.397],
-    'Changping': [40.220, 116.234],
-    'Dingling': [40.290, 116.220],
-    'Dongsi': [39.929, 116.417],
-    'Guanyuan': [39.929, 116.339],
-    'Gucheng': [39.911, 116.163],
-    'Huairou': [40.374, 116.623],
-    'Nongzhanguan': [39.933, 116.472],
-    'Shunyi': [40.126, 116.655],
-    'Tiantan': [39.886, 116.407],
-    'Wanliu': [39.967, 116.307],
-    'Wanshouxigong': [39.883, 116.358]
+station_info = {
+    'Aotizhongxin': {'location': [39.982, 116.397], 'type': 'Urban'},
+    'Changping': {'location': [40.220, 116.234], 'type': 'Suburban'},
+    'Dingling': {'location': [40.290, 116.220], 'type': 'Suburban'},
+    'Dongsi': {'location': [39.929, 116.417], 'type': 'Urban'},
+    'Guanyuan': {'location': [39.929, 116.339], 'type': 'Urban'},
+    'Gucheng': {'location': [39.911, 116.163], 'type': 'Urban'},
+    'Huairou': {'location': [40.374, 116.623], 'type': 'Suburban'},
+    'Nongzhanguan': {'location': [39.933, 116.472], 'type': 'Urban'},
+    'Shunyi': {'location': [40.126, 116.655], 'type': 'Suburban'},
+    'Tiantan': {'location': [39.886, 116.407], 'type': 'Urban'},
+    'Wanliu': {'location': [39.967, 116.307], 'type': 'Urban'},
+    'Wanshouxigong': {'location': [39.883, 116.358], 'type': 'Urban'}
 }
-
 # Sidebar
 st.sidebar.header("Filter Options")
 pollutant = st.sidebar.selectbox("Select Pollutant", ['NO2', 'PM10', 'SO2', 'CO', 'O3', 'PM2.5'])
@@ -41,9 +40,21 @@ start_date, end_date = st.sidebar.date_input(
 )
 station_selected = st.sidebar.multiselect(
     "Select Station (Select 'All' for all stations)", 
-    ['All'] + list(station_locations.keys()), 
+    ['All'] + list(station_info.keys()), 
     default='All'
 )
+
+pollutant_thresholds = {
+    'PM2.5': {'good': 50, 'bad': 100},
+    'PM10': {'good': 75, 'bad': 150},
+    'SO2': {'good': 20, 'bad': 80},
+    'NO2': {'good': 40, 'bad': 100},
+    'CO': {'good': 4, 'bad': 10},
+    'O3': {'good': 60, 'bad': 120}
+}
+
+good_threshold = pollutant_thresholds[pollutant]['good']
+bad_threshold = pollutant_thresholds[pollutant]['bad']
 
 # Filter data by date range
 filtered_data = data[(data.index >= pd.to_datetime(start_date)) & (data.index <= pd.to_datetime(end_date))]
@@ -52,17 +63,26 @@ filtered_data = data[(data.index >= pd.to_datetime(start_date)) & (data.index <=
 if 'All' not in station_selected:
     filtered_data = filtered_data[filtered_data['station'].isin(station_selected)]
 
+avg_pollutant = filtered_data.groupby('station')[pollutant].mean()
+
+good_air = avg_pollutant[avg_pollutant < good_threshold].sort_values()
+bad_air = avg_pollutant[avg_pollutant > bad_threshold].sort_values(ascending=False)
+
 # Title
 st.title("Air Quality Monitoring Dashboard 🌍")
 
-# # 1. Business Question 1 - Annual Trend (2013-2017)
-# st.subheader(f"1. {pollutant} - Trend Analysis (2013-2017) by Station")
-# st.line_chart(filtered_data.resample('M').mean()[pollutant])
+# Display Metrics for Good Air Quality Stations
+st.subheader(f"🏞️ Good Air Quality Stations ({pollutant} < {good_threshold} µg/m³)")
+for station, value in good_air.items():
+    station_type = station_info[station]['type']
+    st.metric(label=f"{station} ({station_type})", value=f"{value:.2f} µg/m³", delta="Good", delta_color="normal")
 
-# # 2. Business Question 2 - Seasonal Patterns
-# st.subheader(f"2. {pollutant} - Seasonal Patterns (Monthly Averages)")
-# seasonal_data = filtered_data.groupby(filtered_data.index.month)[pollutant].mean()
-# st.line_chart(seasonal_data)
+# Display Metrics for Bad Air Quality Stations
+st.subheader(f"🏙️ Bad Air Quality Stations ({pollutant} > {bad_threshold} µg/m³)")
+for station, value in bad_air.items():
+    station_type = station_info[station]['type']
+    st.metric(label=f"{station} ({station_type})", value=f"{value:.2f} µg/m³", delta="Bad", delta_color="inverse")
+
 # 1. Business Question 1 - Annual Trend (2013-2017) by Station
 st.subheader(f"1. {pollutant} - Annual Trend (2013-2017) by Station")
 annual_trend = filtered_data.resample('M').mean()
