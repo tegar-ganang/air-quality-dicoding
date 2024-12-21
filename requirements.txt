@@ -1,1 +1,5 @@
 streamlit
+dataprep
+folium
+pandas
+matplotlib
