@@ -1,19 +1,48 @@
-# 🎈 Blank app template
 
-A simple Streamlit app template for you to modify!
+# 🌍 Beijing Air Quality Monitoring Dashboard
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://blank-app-template.streamlit.app/)
+This dashboard visualizes air quality data across multiple stations, providing insights into pollutants like PM2.5, PM10, NO2, SO2, CO, and O3. Users can filter by date, station, and pollutant to monitor trends, seasonal patterns, and compare urban vs suburban areas.
 
-### How to run it on your own machine
+---
 
-1. Install the requirements
+## 📋 Installation Guide:
 
-   ```
-   $ pip install -r requirements.txt
-   ```
+### 1. Clone the Repository:
+```bash
+git clone https://github.com/tegar-ganang/air-quality-dicoding.git
+cd air-quality-dashboard
+```
 
-2. Run the app
+---
 
-   ```
-   $ streamlit run streamlit_app.py
-   ```
+### 2. Create a Virtual Environment (Optional but Recommended):
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+---
+
+### 3. Install Required Packages:
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## 🧱 Requirements (requirements.txt):
+```
+streamlit
+pandas
+matplotlib
+folium
+streamlit-folium
+dataprep
+```
+
+---
+
+### 4. Run the Streamlit App:
+```bash
+streamlit run air_quality_dashboard.py
+```
