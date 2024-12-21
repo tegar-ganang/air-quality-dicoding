@@ -8,7 +8,7 @@ from streamlit.components.v1 import html
 # Load Data
 @st.cache
 def load_data():
-    data = pd.read_csv('/mnt/data/main_data.csv')
+    data = pd.read_csv('main_data.csv')
     data['datetime'] = pd.to_datetime(data['datetime'])
     data.set_index('datetime', inplace=True)
     return data
