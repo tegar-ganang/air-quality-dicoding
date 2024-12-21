@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import folium
-import matplotlib
+import matplotlib as plt
 from streamlit_folium import folium_static
 from dataprep.eda import create_report
 from streamlit.components.v1 import html
